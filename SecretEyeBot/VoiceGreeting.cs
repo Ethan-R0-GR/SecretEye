@@ -14,6 +14,8 @@ namespace SecretEyeBot
         {
             try
             {
+                //Console.Write(_audioPath);
+                //Console.Write(File.Exists(_audioPath));
                 if (!File.Exists(_audioPath))
                 {
                     Console.WriteLine("(Voice greeting file not found - skipping the audio for now.)");
