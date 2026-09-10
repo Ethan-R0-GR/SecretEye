@@ -17,15 +17,16 @@ namespace SecretEyeBot
             Console.WriteLine(@"             .-'           '-.");
             Console.WriteLine(@"           .'    .-------.    '.");
             Console.WriteLine(@"          /    .'         '.    \");
-            Console.WriteLine(@"         |    |    .---.    |    |");
-            Console.WriteLine(@"         |    |   ( .-. )   |    |");
-            Console.WriteLine(@"         |    |    '---'    |    |");
+            Console.WriteLine(@"         |    |      /\     |    |");
+            Console.WriteLine(@"         |    |     |  |    |    |");
+            Console.WriteLine(@"         |    |      \/     |    |");
             Console.WriteLine(@"          \    '.         .'    /");
             Console.WriteLine(@"           '.    '-------'    .'");
             Console.WriteLine(@"             '-.___________.-'");
             Console.ResetColor();
 
             Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.WriteLine("");
             Console.WriteLine("                  STAY  ALERT");
             Console.WriteLine("=====================================================");
             Console.ResetColor();
