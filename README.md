@@ -47,6 +47,9 @@ the user types `exit`, and handles blank or unrecognised input gracefully.
 This repository uses GitHub Actions to restore and build the project on every
 push. A successful run shows a green check mark under the **Actions** tab.
 
+<img width="1303" height="413" alt="image" src="https://github.com/user-attachments/assets/a3ff9a2e-8373-4d0d-825f-c7517d8c0950" />
+
+
 
 ## Video Presentation
 
