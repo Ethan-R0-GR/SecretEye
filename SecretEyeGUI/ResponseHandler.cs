@@ -5,6 +5,9 @@ namespace SecretEyeGUI
     // It uses a Dictionary<string, List<string>> (a generic collection) to map each topic to several possible answers, and a second dictionary of aliases
     public class ResponseHandler
     {
+
+        private readonly Random _random = new Random();
+
         // Topic keyword
         private readonly Dictionary<string, List<string>> _responses = new Dictionary<string, List<string>>
         {
@@ -53,6 +56,7 @@ namespace SecretEyeGUI
         };
 
         // Alternative wording
+        // recognise a topic even when the user phrases it differently.
         private readonly Dictionary<string, string> _aliases = new Dictionary<string, string>
         {
             ["passwords"] = "password",
@@ -97,8 +101,8 @@ namespace SecretEyeGUI
             string? topic = DetectTopic(input);
             if (topic != null)
             {
-                // For now we return the first answer; the next commit makes this random.
-                return _responses[topic][0];
+                List<string> options = _responses[topic];
+                return options[_random.Next(options.Count)];
             }
 
             // Default response when nothing was recognised.
