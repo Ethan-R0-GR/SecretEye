@@ -8,6 +8,9 @@ namespace SecretEyeGUI
 
         private readonly Random _random = new Random();
 
+        // continue on the same subject instead of restarting the conversation.
+        private string? _currentTopic;
+
         // Topic keyword
         private readonly Dictionary<string, List<string>> _responses = new Dictionary<string, List<string>>
         {
@@ -101,8 +104,19 @@ namespace SecretEyeGUI
             string? topic = DetectTopic(input);
             if (topic != null)
             {
-                List<string> options = _responses[topic];
-                return options[_random.Next(options.Count)];
+                // Remember what we are talking about
+                _currentTopic = topic;
+                return RandomFrom(_responses[topic]);
+            }
+
+            // No new topic in the message
+            if (IsFollowUp(input))
+            {
+                if (_currentTopic != null)
+                    return RandomFrom(_responses[_currentTopic]);
+
+                return "Sure - which topic would you like to explore? Try passwords, phishing, scams, "
+                     + "safe browsing, 2FA, privacy, malware or social engineering.";
             }
 
             // Default response when nothing was recognised.
@@ -110,7 +124,30 @@ namespace SecretEyeGUI
                  + "safe browsing, 2FA, privacy, malware or social engineering.";
         }
 
-        // Works out which topic the input is about: checks the alternative wordings first, then the main keywords. Returns null if no cybersecurity topic was found.
+        // Picks one answer at random from a list of options.
+        private string RandomFrom(List<string> options)
+        {
+            return options[_random.Next(options.Count)];
+        }
+
+        // Recognises follow up phrases
+        private bool IsFollowUp(string input)
+        {
+            string[] followUps =
+            {
+                "tell me more", "more detail", "explain more", "explain",
+                "another tip", "another", "what else", "say more",
+                "continue", "go on", "do not understand", "don't understand", "dont understand"
+            };
+
+            foreach (string phrase in followUps)
+            {
+                if (input.Contains(phrase))
+                    return true;
+            }
+            return false;
+        }
+
         public string? DetectTopic(string input)
         {
             input = input.ToLower();
