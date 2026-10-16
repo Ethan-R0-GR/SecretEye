@@ -108,4 +108,4 @@ push. A successful run shows a green check mark under the **Actions** tab.
 ## Video Presentations
 
 - Part 1 (console): https://youtu.be/X3wan-jAqdU
-- Part 2 (GUI): <!-- paste your Part 2 unlisted YouTube link here -->
+- Part 2 (GUI): https://youtu.be/z4XlbjML-WU
