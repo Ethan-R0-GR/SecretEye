@@ -8,6 +8,9 @@ namespace SecretEyeGUI
 
         private readonly Random _random = new Random();
 
+        // Detects the user's mood
+        private readonly SentimentDetector _sentiment = new SentimentDetector();
+
         // Shared memory
         private readonly MemoryStore _memory;
 
@@ -90,7 +93,10 @@ namespace SecretEyeGUI
         {
             string input = userInput.ToLower();
 
-            // Remember the user's name
+            // Work out the user's mood
+            Sentiment mood = _sentiment.Detect(input);
+
+            //  Remember the user's name
             string? name = ExtractName(userInput);
             if (name != null)
             {
@@ -150,19 +156,28 @@ namespace SecretEyeGUI
 
                 // Personalise the reply.
                 if (topic == _memory.FavouriteTopic)
-                    return $"Since you're interested in {topic}{NameSuffix()}: {tip}";
+                    tip = $"Since you're interested in {topic}{NameSuffix()}: {tip}";
 
-                return tip;
+                return WithEmpathy(mood, tip);
             }
 
             //  Follow up on the current topic
             if (IsFollowUp(input))
             {
                 if (!string.IsNullOrEmpty(_memory.CurrentTopic))
-                    return RandomFrom(_responses[_memory.CurrentTopic]);
+                    return WithEmpathy(mood, RandomFrom(_responses[_memory.CurrentTopic]));
 
                 return "Sure - which topic would you like to explore? Try passwords, phishing, scams, "
                      + "safe browsing, 2FA, privacy, malware or social engineering.";
+            }
+
+            //  The user expressed a feeling but no topic
+            if (mood != Sentiment.Neutral)
+            {
+                string help = string.IsNullOrEmpty(_memory.CurrentTopic)
+                    ? "Tell me what's on your mind - passwords, phishing, scams, privacy and more - and I'll help."
+                    : RandomFrom(_responses[_memory.CurrentTopic]);
+                return WithEmpathy(mood, help);
             }
 
             //  Default response when nothing was recognised 
@@ -235,10 +250,25 @@ namespace SecretEyeGUI
             return char.ToUpper(name[0]) + name.Substring(1).ToLower();
         }
 
-        
         private string NameSuffix()
         {
             return string.IsNullOrWhiteSpace(_memory.UserName) ? "" : ", " + _memory.UserName;
+        }
+
+        // Adds a short, mood appropriate sentence before the tip.
+        private string WithEmpathy(Sentiment mood, string tip)
+        {
+            switch (mood)
+            {
+                case Sentiment.Worried:
+                    return "It's completely understandable to feel worried - let's tackle it together. " + tip;
+                case Sentiment.Frustrated:
+                    return "I hear you, this can be frustrating. Let's keep it simple. " + tip;
+                case Sentiment.Curious:
+                    return "Love the curiosity - that's the best way to stay safe! " + tip;
+                default:
+                    return tip;
+            }
         }
     }
 }
