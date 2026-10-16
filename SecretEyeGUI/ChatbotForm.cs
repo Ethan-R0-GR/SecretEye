@@ -2,13 +2,17 @@ namespace SecretEyeGUI
 {
     public partial class ChatbotForm : Form
     {
-        // Each helper class has one job (the same idea as in Part 1).
         private readonly VoiceGreeting _voice = new VoiceGreeting();
-        private readonly ResponseHandler _responder = new ResponseHandler();
+        private readonly MemoryStore _memory = new MemoryStore();
+        private readonly ResponseHandler _responder;
 
         public ChatbotForm()
         {
             InitializeComponent();
+
+            // what the user tells the bot is remembered.
+            _responder = new ResponseHandler(_memory);
+
             Load += ChatbotForm_Load;
         }
 
@@ -20,7 +24,7 @@ namespace SecretEyeGUI
 
             // Friendly on-screen welcome.
             AppendLine("Bot", "Hi! I'm SecretEye, your cybersecurity awareness assistant.");
-            AppendLine("Bot", "Ask me about passwords, phishing, scams, safe browsing, 2FA, privacy, malware or social engineering. Type 'exit' to say goodbye.");
+            AppendLine("Bot", "Tell me your name, or ask about passwords, phishing, scams, safe browsing, 2FA, privacy, malware or social engineering. Type 'exit' to say goodbye.");
 
             // Play the recorded voice greeting on a background thread so the window
             // appears immediately instead of freezing while the audio plays.
@@ -77,7 +81,7 @@ namespace SecretEyeGUI
                 return;
             }
 
-            // Ask the response handler for a reply
+            // Ask the response handler for a reply.
             string reply = _responder.GetResponse(message);
             AppendLine("Bot", reply);
 

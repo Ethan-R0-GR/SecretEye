@@ -1,15 +1,20 @@
 namespace SecretEyeGUI
 {
-    // Recognises cybersecurity topics in the user's input and returns relevant guidance.
-    
-    // It uses a Dictionary<string, List<string>> (a generic collection) to map each topic to several possible answers, and a second dictionary of aliases
+    // Recognises cybersecurity topics and returns relevant guidance. It also works with
+    // a MemoryStore so the bot can remember the user's name and favourite topic, recall
+    // them, and keep follow-up questions on the current topic.
     public class ResponseHandler
     {
 
         private readonly Random _random = new Random();
 
-        // continue on the same subject instead of restarting the conversation.
-        private string? _currentTopic;
+        // Shared memory
+        private readonly MemoryStore _memory;
+
+        public ResponseHandler(MemoryStore memory)
+        {
+            _memory = memory;
+        }
 
         // Topic keyword
         private readonly Dictionary<string, List<string>> _responses = new Dictionary<string, List<string>>
@@ -58,8 +63,7 @@ namespace SecretEyeGUI
             }
         };
 
-        // Alternative wording
-        // recognise a topic even when the user phrases it differently.
+        // Alternative wordings
         private readonly Dictionary<string, string> _aliases = new Dictionary<string, string>
         {
             ["passwords"] = "password",
@@ -82,12 +86,49 @@ namespace SecretEyeGUI
             ["social engineer"] = "social engineering"
         };
 
-        // Returns a relevant reply for the user's input
         public string GetResponse(string userInput)
         {
             string input = userInput.ToLower();
 
-            // General / conversational questions.
+            // Remember the user's name
+            string? name = ExtractName(userInput);
+            if (name != null)
+            {
+                _memory.UserName = name;
+                return $"Nice to meet you, {name}! I'll remember that.";
+            }
+
+            //  Recall the name
+            if (input.Contains("what is my name") || input.Contains("what's my name") || input.Contains("who am i"))
+            {
+                return string.IsNullOrWhiteSpace(_memory.UserName)
+                    ? "You haven't told me your name yet - you can say 'my name is ...'."
+                    : $"Your name is {_memory.UserName}.";
+            }
+
+            //  Remember a favourite topic
+            if (input.Contains("interested in") || input.Contains("i like") ||
+                input.Contains("my favourite") || input.Contains("my favorite"))
+            {
+                string? interest = DetectTopic(input);
+                if (interest != null)
+                {
+                    _memory.FavouriteTopic = interest;
+                    _memory.CurrentTopic = interest;
+                    return $"Great{NameSuffix()}! I'll remember you're interested in {interest}. " + RandomFrom(_responses[interest]);
+                }
+            }
+
+            //  Recall the favourite topic 
+            if (input.Contains("what am i interested") || input.Contains("my favourite topic") ||
+                input.Contains("my favorite topic") || input.Contains("what do i like"))
+            {
+                return string.IsNullOrWhiteSpace(_memory.FavouriteTopic)
+                    ? "You haven't told me a favourite topic yet - try 'I'm interested in privacy'."
+                    : $"You're interested in {_memory.FavouriteTopic}. " + RandomFrom(_responses[_memory.FavouriteTopic]);
+            }
+
+            //  General / conversational questions 
             if (input.Contains("how are you"))
                 return "I am running securely, thank you! Ready to help you stay safe online.";
 
@@ -98,56 +139,38 @@ namespace SecretEyeGUI
                 return "You can ask me about: passwords, phishing, scams, safe browsing, 2FA, privacy, malware and social engineering.";
 
             if (input.Contains("thank"))
-                return "You are welcome! Staying informed is the best defence.";
+                return $"You are welcome{NameSuffix()}! Staying informed is the best defence.";
 
-            // Try to recognise a cybersecurity topic.
+            //  A cybersecurity topic 
             string? topic = DetectTopic(input);
             if (topic != null)
             {
-                // Remember what we are talking about
-                _currentTopic = topic;
-                return RandomFrom(_responses[topic]);
+                _memory.CurrentTopic = topic;
+                string tip = RandomFrom(_responses[topic]);
+
+                // Personalise the reply.
+                if (topic == _memory.FavouriteTopic)
+                    return $"Since you're interested in {topic}{NameSuffix()}: {tip}";
+
+                return tip;
             }
 
-            // No new topic in the message
+            //  Follow up on the current topic
             if (IsFollowUp(input))
             {
-                if (_currentTopic != null)
-                    return RandomFrom(_responses[_currentTopic]);
+                if (!string.IsNullOrEmpty(_memory.CurrentTopic))
+                    return RandomFrom(_responses[_memory.CurrentTopic]);
 
                 return "Sure - which topic would you like to explore? Try passwords, phishing, scams, "
                      + "safe browsing, 2FA, privacy, malware or social engineering.";
             }
 
-            // Default response when nothing was recognised.
+            //  Default response when nothing was recognised 
             return "I am not sure I understand that yet. Try asking about passwords, phishing, scams, "
                  + "safe browsing, 2FA, privacy, malware or social engineering.";
         }
 
-        // Picks one answer at random from a list of options.
-        private string RandomFrom(List<string> options)
-        {
-            return options[_random.Next(options.Count)];
-        }
-
-        // Recognises follow up phrases
-        private bool IsFollowUp(string input)
-        {
-            string[] followUps =
-            {
-                "tell me more", "more detail", "explain more", "explain",
-                "another tip", "another", "what else", "say more",
-                "continue", "go on", "do not understand", "don't understand", "dont understand"
-            };
-
-            foreach (string phrase in followUps)
-            {
-                if (input.Contains(phrase))
-                    return true;
-            }
-            return false;
-        }
-
+        // Works out which topic the input is about
         public string? DetectTopic(string input)
         {
             input = input.ToLower();
@@ -165,6 +188,57 @@ namespace SecretEyeGUI
             }
 
             return null;
+        }
+
+        // Picks one answer at random from a list of options.
+        private string RandomFrom(List<string> options)
+        {
+            return options[_random.Next(options.Count)];
+        }
+
+        // Recognises follow up phrases.
+        private bool IsFollowUp(string input)
+        {
+            string[] followUps =
+            {
+                "tell me more", "more detail", "explain more", "explain",
+                "another tip", "another", "what else", "say more",
+                "continue", "go on", "do not understand", "don't understand", "dont understand"
+            };
+
+            foreach (string phrase in followUps)
+            {
+                if (input.Contains(phrase))
+                    return true;
+            }
+            return false;
+        }
+
+        // Captures a name
+        private string? ExtractName(string original)
+        {
+            string lower = original.ToLower();
+
+            string marker;
+            if (lower.Contains("my name is")) marker = "my name is";
+            else if (lower.Contains("call me")) marker = "call me";
+            else return null;
+
+            int start = lower.IndexOf(marker) + marker.Length;
+            string rest = original.Substring(start).Trim();
+            if (rest.Length == 0) return null;
+
+            // Take the first word as the name and tidy its capitalisation.
+            string name = rest.Split(new[] { ' ', ',', '.', '!', '?' }, StringSplitOptions.RemoveEmptyEntries)[0];
+            if (name.Length == 0) return null;
+
+            return char.ToUpper(name[0]) + name.Substring(1).ToLower();
+        }
+
+        
+        private string NameSuffix()
+        {
+            return string.IsNullOrWhiteSpace(_memory.UserName) ? "" : ", " + _memory.UserName;
         }
     }
 }
