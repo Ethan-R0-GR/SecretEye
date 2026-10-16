@@ -5,7 +5,6 @@ namespace SecretEyeGUI
         // Each helper class has one job (the same idea as in Part 1).
         private readonly VoiceGreeting _voice = new VoiceGreeting();
         private readonly ResponseHandler _responder = new ResponseHandler();
-        private readonly UserProfile _user = new UserProfile();
 
         public ChatbotForm()
         {
@@ -13,7 +12,7 @@ namespace SecretEyeGUI
             Load += ChatbotForm_Load;
         }
 
-        // Runs when the user clicks the Send button.
+        // Runs once when the window opens: shows branding, greets the user, plays the voice.
         private void ChatbotForm_Load(object? sender, EventArgs e)
         {
             // Part 1 ASCII branding, shown in the banner area.
@@ -21,7 +20,7 @@ namespace SecretEyeGUI
 
             // Friendly on-screen welcome.
             AppendLine("Bot", "Hi! I'm SecretEye, your cybersecurity awareness assistant.");
-            AppendLine("Bot", "Ask me about passwords, phishing, scams, safe browsing, 2FA or privacy. Type 'exit' to say goodbye.");
+            AppendLine("Bot", "Ask me about passwords, phishing, scams, safe browsing, 2FA, privacy, malware or social engineering. Type 'exit' to say goodbye.");
 
             // Play the recorded voice greeting on a background thread so the window
             // appears immediately instead of freezing while the audio plays.
@@ -57,16 +56,29 @@ namespace SecretEyeGUI
 
             AppendLine("You", message);
 
-            // Allow the user to end the chat politely.
+            // Allow the user to end the chat politely, then close the window.
             if (message.ToLower() == "exit")
             {
                 AppendLine("Bot", "Goodbye! Stay safe online.");
                 txtUserInput.Clear();
+
+                // Lock input and close shortly after, so the goodbye is visible before the window disappears.
+                txtUserInput.Enabled = false;
+                btnSend.Enabled = false;
+
+                System.Windows.Forms.Timer closeTimer = new System.Windows.Forms.Timer();
+                closeTimer.Interval = 1200; // wait 1.2 seconds
+                closeTimer.Tick += (s, ev) =>
+                {
+                    closeTimer.Stop();
+                    Close();
+                };
+                closeTimer.Start();
                 return;
             }
 
-            // Ask the response handler (the Part 1 logic) for a reply.
-            string reply = _responder.GetResponse(message, _user);
+            // Ask the response handler for a reply
+            string reply = _responder.GetResponse(message);
             AppendLine("Bot", reply);
 
             txtUserInput.Clear();
