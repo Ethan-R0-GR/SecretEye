@@ -82,8 +82,15 @@ namespace SecretEyeGUI
             }
 
             // Ask the response handler for a reply.
-            string reply = _responder.GetResponse(message);
-            AppendLine("Bot", reply);
+            try
+            {
+                string reply = _responder.GetResponse(message);
+                AppendLine("Bot", reply);
+            }
+            catch (Exception)
+            {
+                AppendLine("Bot", "Sorry, something went wrong handling that. Could you try rephrasing?");
+            }
 
             txtUserInput.Clear();
             txtUserInput.Focus();
