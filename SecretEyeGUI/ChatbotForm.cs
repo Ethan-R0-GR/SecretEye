@@ -9,6 +9,8 @@ namespace SecretEyeGUI
         private readonly TaskRepository _taskRepository = new TaskRepository();
         private readonly ActivityLogger _activityLogger = new ActivityLogger();
 
+        private readonly QuizManager _quiz = new QuizManager();
+
         public ChatbotForm()
         {
             InitializeComponent();
@@ -39,14 +41,12 @@ namespace SecretEyeGUI
         {
             try
             {
-
                 dgvTasks.DataSource = null;
                 dgvTasks.DataSource = _taskRepository.GetAllTasks();
 
                 // Hide the raw database ID column.
                 if (dgvTasks.Columns["TaskId"] != null)
                     dgvTasks.Columns["TaskId"].Visible = false;
-
             }
             catch (Exception ex)
             {
@@ -58,18 +58,14 @@ namespace SecretEyeGUI
         private CyberTask? GetSelectedTask()
         {
             if (dgvTasks.CurrentRow == null)
-
                 return null;
-
 
             return dgvTasks.CurrentRow.DataBoundItem as CyberTask;
         }
 
         private void btnAddTask_Click(object? sender, EventArgs e)
         {
-
             string title = txtTaskTitle.Text.Trim();
-
             string description = txtTaskDescription.Text.Trim();
 
             if (title == "" || description == "")
@@ -80,7 +76,6 @@ namespace SecretEyeGUI
 
             CyberTask task = new CyberTask
             {
-
                 Title = title,
                 Description = description,
                 ReminderDate = chkUseReminder.Checked ? dtpReminder.Value : null,
@@ -94,13 +89,11 @@ namespace SecretEyeGUI
 
                 lblTaskStatus.Text = "Task added.";
                 txtTaskTitle.Clear();
-
                 txtTaskDescription.Clear();
                 chkUseReminder.Checked = false;
 
                 LoadTasks();
             }
-
             catch (Exception ex)
             {
                 lblTaskStatus.Text = "Could not add task: " + ex.Message;
@@ -112,12 +105,9 @@ namespace SecretEyeGUI
             CyberTask? task = GetSelectedTask();
             if (task == null)
             {
-
                 lblTaskStatus.Text = "Please select a task first.";
                 return;
-
             }
-
 
             try
             {
@@ -137,13 +127,9 @@ namespace SecretEyeGUI
             CyberTask? task = GetSelectedTask();
             if (task == null)
             {
-
                 lblTaskStatus.Text = "Please select a task first.";
                 return;
-
             }
-
-
 
             DialogResult answer = MessageBox.Show("Delete this task?\n" + task.Title,
                 "Confirm Delete", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
@@ -165,11 +151,106 @@ namespace SecretEyeGUI
 
         private void btnRefreshTasks_Click(object? sender, EventArgs e)
         {
-
             LoadTasks();
-
             lblTaskStatus.Text = "Task list refreshed.";
+        }
 
+        private void btnStartQuiz_Click(object? sender, EventArgs e)
+        {
+            _quiz.StartQuiz();
+
+            _activityLogger.Log("Quiz started");
+
+            ShowQuestion();
+
+            btnSubmitAnswer.Enabled = true;
+            btnNextQuestion.Enabled = false;
+        }
+
+        private void btnSubmitAnswer_Click(object? sender, EventArgs e)
+        {
+            int selected = GetSelectedOption();
+            if (selected == -1)
+            {
+
+                lblQuizFeedback.Text = "Please select an answer.";
+                return;
+            }
+
+            QuizAnswerResult result = _quiz.CheckAnswer(selected);
+            lblQuizFeedback.Text = result.Feedback;
+            lblQuizScore.Text = "Score: " + _quiz.Score;
+
+
+
+            btnSubmitAnswer.Enabled = false;
+            btnNextQuestion.Enabled = true;
+        }
+
+        private void btnNextQuestion_Click(object? sender, EventArgs e)
+        {
+            if (_quiz.MoveNext())
+            {
+                ShowQuestion();
+
+                btnSubmitAnswer.Enabled = true;
+                btnNextQuestion.Enabled = false;
+            }
+            else
+            {
+                // Quiz finished.
+                lblQuestionNumber.Text = "Quiz complete!";
+                lblQuestion.Text = "You scored " + _quiz.Score + " out of " + _quiz.TotalQuestions + ".";
+                lblQuizFeedback.Text = _quiz.Score >= _quiz.TotalQuestions / 2
+                    ? "Great job! You're becoming a cybersecurity pro."
+                    : "Keep learning to stay safe online.";
+
+                foreach (RadioButton radio in new[] { rdoA, rdoB, rdoC, rdoD })
+                    radio.Visible = false;
+
+                btnSubmitAnswer.Enabled = false;
+                btnNextQuestion.Enabled = false;
+
+                _activityLogger.Log("Quiz finished - score " + _quiz.Score + "/" + _quiz.TotalQuestions);
+            }
+        }
+
+        // Shows the current question and sets up the answer options.
+        private void ShowQuestion()
+        {
+            QuizQuestion question = _quiz.CurrentQuestion;
+
+            lblQuestionNumber.Text = "Question " + (_quiz.CurrentIndex + 1) + " of " + _quiz.TotalQuestions;
+            lblQuestion.Text = question.QuestionText;
+            lblQuizScore.Text = "Score: " + _quiz.Score;
+            lblQuizFeedback.Text = "";
+
+            RadioButton[] radios = { rdoA, rdoB, rdoC, rdoD };
+            for (int i = 0; i < radios.Length; i++)
+            {
+                radios[i].Checked = false;
+
+                if (i < question.Options.Count)
+                {
+                    radios[i].Text = question.Options[i];
+
+                    radios[i].Visible = true;
+                }
+                else
+                {
+                    radios[i].Visible = false;
+                }
+            }
+        }
+
+        // Returns the index of the selected option, or -1 if none is chosen.
+        private int GetSelectedOption()
+        {
+            if (rdoA.Checked) return 0;
+            if (rdoB.Checked) return 1;
+            if (rdoC.Checked) return 2;
+            if (rdoD.Checked) return 3;
+            return -1;
         }
 
         private void btnSend_Click(object? sender, EventArgs e) => SendMessage();

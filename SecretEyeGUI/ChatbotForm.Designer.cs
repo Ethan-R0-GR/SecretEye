@@ -46,9 +46,21 @@ namespace SecretEyeGUI
             btnDeleteTask = new Button();
             btnRefreshTasks = new Button();
             lblTaskStatus = new Label();
+            lblQuizScore = new Label();
+            lblQuestionNumber = new Label();
+            lblQuestion = new Label();
+            rdoA = new RadioButton();
+            rdoB = new RadioButton();
+            rdoC = new RadioButton();
+            rdoD = new RadioButton();
+            lblQuizFeedback = new Label();
+            btnStartQuiz = new Button();
+            btnSubmitAnswer = new Button();
+            btnNextQuestion = new Button();
             tabMain.SuspendLayout();
             tabChat.SuspendLayout();
             tabTasks.SuspendLayout();
+            tabQuiz.SuspendLayout();
             tlpRoot.SuspendLayout();
             pnlInput.SuspendLayout();
             tlpTasks.SuspendLayout();
@@ -83,6 +95,17 @@ namespace SecretEyeGUI
             // tabQuiz
             //
             tabQuiz.BackColor = Color.FromArgb(13, 17, 23);
+            tabQuiz.Controls.Add(lblQuizScore);
+            tabQuiz.Controls.Add(lblQuestionNumber);
+            tabQuiz.Controls.Add(lblQuestion);
+            tabQuiz.Controls.Add(rdoA);
+            tabQuiz.Controls.Add(rdoB);
+            tabQuiz.Controls.Add(rdoC);
+            tabQuiz.Controls.Add(rdoD);
+            tabQuiz.Controls.Add(lblQuizFeedback);
+            tabQuiz.Controls.Add(btnStartQuiz);
+            tabQuiz.Controls.Add(btnSubmitAnswer);
+            tabQuiz.Controls.Add(btnNextQuestion);
             tabQuiz.Name = "tabQuiz";
             tabQuiz.Text = "Quiz";
             //
@@ -375,6 +398,113 @@ namespace SecretEyeGUI
             lblTaskStatus.Name = "lblTaskStatus";
             lblTaskStatus.TextAlign = ContentAlignment.MiddleLeft;
             //
+            // lblQuizScore
+            //
+            lblQuizScore.AutoSize = true;
+            lblQuizScore.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+            lblQuizScore.ForeColor = Color.FromArgb(230, 237, 243);
+            lblQuizScore.Location = new Point(20, 15);
+            lblQuizScore.Name = "lblQuizScore";
+            lblQuizScore.Text = "Score: 0";
+            //
+            // lblQuestionNumber
+            //
+            lblQuestionNumber.AutoSize = true;
+            lblQuestionNumber.ForeColor = Color.FromArgb(139, 148, 158);
+            lblQuestionNumber.Location = new Point(20, 45);
+            lblQuestionNumber.Name = "lblQuestionNumber";
+            lblQuestionNumber.Text = "Press Start Quiz to begin.";
+            //
+            // lblQuestion
+            //
+            lblQuestion.ForeColor = Color.FromArgb(230, 237, 243);
+            lblQuestion.Font = new Font("Segoe UI", 11F);
+            lblQuestion.Location = new Point(20, 80);
+            lblQuestion.Name = "lblQuestion";
+            lblQuestion.Size = new Size(720, 55);
+            lblQuestion.Text = "";
+            //
+            // rdoA
+            //
+            rdoA.AutoSize = true;
+            rdoA.ForeColor = Color.FromArgb(230, 237, 243);
+            rdoA.Location = new Point(40, 150);
+            rdoA.Name = "rdoA";
+            rdoA.Visible = false;
+            //
+            // rdoB
+            //
+            rdoB.AutoSize = true;
+            rdoB.ForeColor = Color.FromArgb(230, 237, 243);
+            rdoB.Location = new Point(40, 185);
+            rdoB.Name = "rdoB";
+            rdoB.Visible = false;
+            //
+            // rdoC
+            //
+            rdoC.AutoSize = true;
+            rdoC.ForeColor = Color.FromArgb(230, 237, 243);
+            rdoC.Location = new Point(40, 220);
+            rdoC.Name = "rdoC";
+            rdoC.Visible = false;
+            //
+            // rdoD
+            //
+            rdoD.AutoSize = true;
+            rdoD.ForeColor = Color.FromArgb(230, 237, 243);
+            rdoD.Location = new Point(40, 255);
+            rdoD.Name = "rdoD";
+            rdoD.Visible = false;
+            //
+            // lblQuizFeedback
+            //
+            lblQuizFeedback.ForeColor = Color.FromArgb(56, 189, 208);
+            lblQuizFeedback.Location = new Point(20, 300);
+            lblQuizFeedback.Name = "lblQuizFeedback";
+            lblQuizFeedback.Size = new Size(720, 70);
+            lblQuizFeedback.Text = "";
+            //
+            // btnStartQuiz
+            //
+            btnStartQuiz.BackColor = Color.FromArgb(35, 134, 54);
+            btnStartQuiz.FlatStyle = FlatStyle.Flat;
+            btnStartQuiz.Font = new Font("Segoe UI", 9.5F, FontStyle.Bold);
+            btnStartQuiz.ForeColor = Color.White;
+            btnStartQuiz.Location = new Point(20, 390);
+            btnStartQuiz.Name = "btnStartQuiz";
+            btnStartQuiz.Size = new Size(120, 34);
+            btnStartQuiz.Text = "Start Quiz";
+            btnStartQuiz.UseVisualStyleBackColor = false;
+            btnStartQuiz.Click += btnStartQuiz_Click;
+            //
+            // btnSubmitAnswer
+            //
+            btnSubmitAnswer.BackColor = Color.FromArgb(35, 134, 54);
+            btnSubmitAnswer.Enabled = false;
+            btnSubmitAnswer.FlatStyle = FlatStyle.Flat;
+            btnSubmitAnswer.Font = new Font("Segoe UI", 9.5F, FontStyle.Bold);
+            btnSubmitAnswer.ForeColor = Color.White;
+            btnSubmitAnswer.Location = new Point(150, 390);
+            btnSubmitAnswer.Name = "btnSubmitAnswer";
+            btnSubmitAnswer.Size = new Size(140, 34);
+            btnSubmitAnswer.Text = "Submit Answer";
+            btnSubmitAnswer.UseVisualStyleBackColor = false;
+            btnSubmitAnswer.Click += btnSubmitAnswer_Click;
+            //
+            // btnNextQuestion
+            //
+            btnNextQuestion.BackColor = Color.FromArgb(35, 134, 54);
+            btnNextQuestion.Enabled = false;
+            btnNextQuestion.FlatStyle = FlatStyle.Flat;
+            btnNextQuestion.Font = new Font("Segoe UI", 9.5F, FontStyle.Bold);
+            btnNextQuestion.ForeColor = Color.White;
+            btnNextQuestion.Location = new Point(300, 390);
+            btnNextQuestion.Name = "btnNextQuestion";
+            btnNextQuestion.Size = new Size(140, 34);
+            btnNextQuestion.Text = "Next Question";
+            btnNextQuestion.UseVisualStyleBackColor = false;
+            btnNextQuestion.Click += btnNextQuestion_Click;
+            //
             // ChatbotForm
             //
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -389,6 +519,8 @@ namespace SecretEyeGUI
             tabMain.ResumeLayout(false);
             tabChat.ResumeLayout(false);
             tabTasks.ResumeLayout(false);
+            tabQuiz.ResumeLayout(false);
+            tabQuiz.PerformLayout();
             tlpRoot.ResumeLayout(false);
             pnlInput.ResumeLayout(false);
             pnlInput.PerformLayout();
@@ -430,5 +562,16 @@ namespace SecretEyeGUI
         private Button btnDeleteTask;
         private Button btnRefreshTasks;
         private Label lblTaskStatus;
+        private Label lblQuizScore;
+        private Label lblQuestionNumber;
+        private Label lblQuestion;
+        private RadioButton rdoA;
+        private RadioButton rdoB;
+        private RadioButton rdoC;
+        private RadioButton rdoD;
+        private Label lblQuizFeedback;
+        private Button btnStartQuiz;
+        private Button btnSubmitAnswer;
+        private Button btnNextQuestion;
     }
 }
