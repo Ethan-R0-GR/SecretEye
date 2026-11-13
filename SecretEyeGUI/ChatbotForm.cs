@@ -11,6 +11,8 @@ namespace SecretEyeGUI
 
         private readonly QuizManager _quiz = new QuizManager();
 
+        private readonly NlpProcessor _nlp = new NlpProcessor();
+
         public ChatbotForm()
         {
             InitializeComponent();
@@ -158,11 +160,9 @@ namespace SecretEyeGUI
         private void btnStartQuiz_Click(object? sender, EventArgs e)
         {
             _quiz.StartQuiz();
-
             _activityLogger.Log("Quiz started");
 
             ShowQuestion();
-
             btnSubmitAnswer.Enabled = true;
             btnNextQuestion.Enabled = false;
         }
@@ -172,7 +172,6 @@ namespace SecretEyeGUI
             int selected = GetSelectedOption();
             if (selected == -1)
             {
-
                 lblQuizFeedback.Text = "Please select an answer.";
                 return;
             }
@@ -180,8 +179,6 @@ namespace SecretEyeGUI
             QuizAnswerResult result = _quiz.CheckAnswer(selected);
             lblQuizFeedback.Text = result.Feedback;
             lblQuizScore.Text = "Score: " + _quiz.Score;
-
-
 
             btnSubmitAnswer.Enabled = false;
             btnNextQuestion.Enabled = true;
@@ -192,7 +189,6 @@ namespace SecretEyeGUI
             if (_quiz.MoveNext())
             {
                 ShowQuestion();
-
                 btnSubmitAnswer.Enabled = true;
                 btnNextQuestion.Enabled = false;
             }
@@ -210,7 +206,6 @@ namespace SecretEyeGUI
 
                 btnSubmitAnswer.Enabled = false;
                 btnNextQuestion.Enabled = false;
-
                 _activityLogger.Log("Quiz finished - score " + _quiz.Score + "/" + _quiz.TotalQuestions);
             }
         }
@@ -233,7 +228,6 @@ namespace SecretEyeGUI
                 if (i < question.Options.Count)
                 {
                     radios[i].Text = question.Options[i];
-
                     radios[i].Visible = true;
                 }
                 else
@@ -297,7 +291,19 @@ namespace SecretEyeGUI
                 return;
             }
 
-            // Ask the response handler for a reply.
+            // NLP: if the message is a command (task / quiz / activity), handle it here.
+            NlpIntent intent = _nlp.Detect(message);
+            if (intent != NlpIntent.None)
+            {
+                HandleNlpIntent(intent);
+
+                txtUserInput.Clear();
+                txtUserInput.Focus();
+
+                return;
+            }
+
+            // Otherwise ask the response handler for a reply.
             try
             {
                 _chatBot.ProcessInput(message);
@@ -309,6 +315,32 @@ namespace SecretEyeGUI
 
             txtUserInput.Clear();
             txtUserInput.Focus();
+        }
+
+        // Acts on a recognised command by opening the right tab.
+        private void HandleNlpIntent(NlpIntent intent)
+        {
+            switch (intent)
+            {
+                case NlpIntent.AddTask:
+                    AppendLine("Bot", "Opening the Tasks tab so you can add or manage a task.");
+                    tabMain.SelectedTab = tabTasks;
+                    _activityLogger.Log("NLP command: open tasks");
+                    break;
+
+                case NlpIntent.StartQuiz:
+                    AppendLine("Bot", "Opening the quiz - click Start Quiz when you're ready.");
+                    tabMain.SelectedTab = tabQuiz;
+                    _activityLogger.Log("NLP command: open quiz");
+                    break;
+
+
+                case NlpIntent.ShowActivity:
+                    AppendLine("Bot", "Here's your activity log.");
+                    tabMain.SelectedTab = tabActivity;
+                    _activityLogger.Log("NLP command: open activity");
+                    break;
+            }
         }
 
         private void DisplayBotResponse(string message)
