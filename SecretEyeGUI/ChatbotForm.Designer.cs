@@ -31,10 +31,30 @@ namespace SecretEyeGUI
             txtUserInput = new TextBox();
             btnSend = new Button();
             lblStatus = new Label();
+            tlpTasks = new TableLayoutPanel();
+            pnlTaskInput = new Panel();
+            lblTitleCaption = new Label();
+            txtTaskTitle = new TextBox();
+            lblDescCaption = new Label();
+            txtTaskDescription = new TextBox();
+            chkUseReminder = new CheckBox();
+            dtpReminder = new DateTimePicker();
+            btnAddTask = new Button();
+            dgvTasks = new DataGridView();
+            pnlTaskButtons = new Panel();
+            btnCompleteTask = new Button();
+            btnDeleteTask = new Button();
+            btnRefreshTasks = new Button();
+            lblTaskStatus = new Label();
             tabMain.SuspendLayout();
             tabChat.SuspendLayout();
+            tabTasks.SuspendLayout();
             tlpRoot.SuspendLayout();
             pnlInput.SuspendLayout();
+            tlpTasks.SuspendLayout();
+            pnlTaskInput.SuspendLayout();
+            pnlTaskButtons.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)dgvTasks).BeginInit();
             SuspendLayout();
             //
             // tabMain  (one tab per feature)
@@ -56,6 +76,7 @@ namespace SecretEyeGUI
             // tabTasks
             //
             tabTasks.BackColor = Color.FromArgb(13, 17, 23);
+            tabTasks.Controls.Add(tlpTasks);
             tabTasks.Name = "tabTasks";
             tabTasks.Text = "Tasks";
             //
@@ -188,6 +209,172 @@ namespace SecretEyeGUI
             lblStatus.Text = "Ask me about passwords, phishing, scams, safe browsing, 2FA or privacy.";
             lblStatus.TextAlign = ContentAlignment.MiddleLeft;
             //
+            // tlpTasks  (Tasks tab layout: inputs / grid / buttons / status)
+            //
+            tlpTasks.ColumnCount = 1;
+            tlpTasks.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
+            tlpTasks.Controls.Add(pnlTaskInput, 0, 0);
+            tlpTasks.Controls.Add(dgvTasks, 0, 1);
+            tlpTasks.Controls.Add(pnlTaskButtons, 0, 2);
+            tlpTasks.Controls.Add(lblTaskStatus, 0, 3);
+            tlpTasks.Dock = DockStyle.Fill;
+            tlpTasks.Name = "tlpTasks";
+            tlpTasks.Padding = new Padding(10);
+            tlpTasks.RowCount = 4;
+            tlpTasks.RowStyles.Add(new RowStyle(SizeType.Absolute, 170F));
+            tlpTasks.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
+            tlpTasks.RowStyles.Add(new RowStyle(SizeType.Absolute, 48F));
+            tlpTasks.RowStyles.Add(new RowStyle(SizeType.Absolute, 28F));
+            //
+            // pnlTaskInput
+            //
+            pnlTaskInput.Controls.Add(lblTitleCaption);
+            pnlTaskInput.Controls.Add(txtTaskTitle);
+            pnlTaskInput.Controls.Add(lblDescCaption);
+            pnlTaskInput.Controls.Add(txtTaskDescription);
+            pnlTaskInput.Controls.Add(chkUseReminder);
+            pnlTaskInput.Controls.Add(dtpReminder);
+            pnlTaskInput.Controls.Add(btnAddTask);
+            pnlTaskInput.Dock = DockStyle.Fill;
+            pnlTaskInput.Name = "pnlTaskInput";
+            //
+            // lblTitleCaption
+            //
+            lblTitleCaption.AutoSize = true;
+            lblTitleCaption.ForeColor = Color.FromArgb(230, 237, 243);
+            lblTitleCaption.Location = new Point(3, 12);
+            lblTitleCaption.Name = "lblTitleCaption";
+            lblTitleCaption.Text = "Task title:";
+            //
+            // txtTaskTitle
+            //
+            txtTaskTitle.BackColor = Color.FromArgb(33, 38, 45);
+            txtTaskTitle.BorderStyle = BorderStyle.FixedSingle;
+            txtTaskTitle.ForeColor = Color.FromArgb(230, 237, 243);
+            txtTaskTitle.Location = new Point(120, 9);
+            txtTaskTitle.Name = "txtTaskTitle";
+            txtTaskTitle.Size = new Size(480, 27);
+            //
+            // lblDescCaption
+            //
+            lblDescCaption.AutoSize = true;
+            lblDescCaption.ForeColor = Color.FromArgb(230, 237, 243);
+            lblDescCaption.Location = new Point(3, 48);
+            lblDescCaption.Name = "lblDescCaption";
+            lblDescCaption.Text = "Description:";
+            //
+            // txtTaskDescription
+            //
+            txtTaskDescription.BackColor = Color.FromArgb(33, 38, 45);
+            txtTaskDescription.BorderStyle = BorderStyle.FixedSingle;
+            txtTaskDescription.ForeColor = Color.FromArgb(230, 237, 243);
+            txtTaskDescription.Location = new Point(120, 45);
+            txtTaskDescription.Multiline = true;
+            txtTaskDescription.Name = "txtTaskDescription";
+            txtTaskDescription.Size = new Size(480, 55);
+            //
+            // chkUseReminder
+            //
+            chkUseReminder.AutoSize = true;
+            chkUseReminder.ForeColor = Color.FromArgb(230, 237, 243);
+            chkUseReminder.Location = new Point(3, 115);
+            chkUseReminder.Name = "chkUseReminder";
+            chkUseReminder.Text = "Set reminder";
+            //
+            // dtpReminder
+            //
+            dtpReminder.Format = DateTimePickerFormat.Short;
+            dtpReminder.Location = new Point(120, 112);
+            dtpReminder.Name = "dtpReminder";
+            dtpReminder.Size = new Size(220, 27);
+            //
+            // btnAddTask
+            //
+            btnAddTask.BackColor = Color.FromArgb(35, 134, 54);
+            btnAddTask.FlatStyle = FlatStyle.Flat;
+            btnAddTask.Font = new Font("Segoe UI", 9.5F, FontStyle.Bold);
+            btnAddTask.ForeColor = Color.White;
+            btnAddTask.Location = new Point(360, 110);
+            btnAddTask.Name = "btnAddTask";
+            btnAddTask.Size = new Size(120, 32);
+            btnAddTask.Text = "Add Task";
+            btnAddTask.UseVisualStyleBackColor = false;
+            btnAddTask.Click += btnAddTask_Click;
+            //
+            // dgvTasks
+            //
+            dgvTasks.AllowUserToAddRows = false;
+            dgvTasks.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+            dgvTasks.BackgroundColor = Color.FromArgb(22, 27, 34);
+            dgvTasks.BorderStyle = BorderStyle.None;
+            dgvTasks.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(33, 38, 45);
+            dgvTasks.ColumnHeadersDefaultCellStyle.ForeColor = Color.FromArgb(230, 237, 243);
+            dgvTasks.DefaultCellStyle.BackColor = Color.FromArgb(22, 27, 34);
+            dgvTasks.DefaultCellStyle.ForeColor = Color.FromArgb(230, 237, 243);
+            dgvTasks.DefaultCellStyle.SelectionBackColor = Color.FromArgb(35, 134, 54);
+            dgvTasks.DefaultCellStyle.SelectionForeColor = Color.White;
+            dgvTasks.Dock = DockStyle.Fill;
+            dgvTasks.EnableHeadersVisualStyles = false;
+            dgvTasks.GridColor = Color.FromArgb(48, 54, 61);
+            dgvTasks.Name = "dgvTasks";
+            dgvTasks.ReadOnly = true;
+            dgvTasks.RowHeadersVisible = false;
+            dgvTasks.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+            //
+            // pnlTaskButtons
+            //
+            pnlTaskButtons.Controls.Add(btnCompleteTask);
+            pnlTaskButtons.Controls.Add(btnDeleteTask);
+            pnlTaskButtons.Controls.Add(btnRefreshTasks);
+            pnlTaskButtons.Dock = DockStyle.Fill;
+            pnlTaskButtons.Name = "pnlTaskButtons";
+            //
+            // btnCompleteTask
+            //
+            btnCompleteTask.BackColor = Color.FromArgb(35, 134, 54);
+            btnCompleteTask.FlatStyle = FlatStyle.Flat;
+            btnCompleteTask.Font = new Font("Segoe UI", 9.5F, FontStyle.Bold);
+            btnCompleteTask.ForeColor = Color.White;
+            btnCompleteTask.Location = new Point(0, 8);
+            btnCompleteTask.Name = "btnCompleteTask";
+            btnCompleteTask.Size = new Size(150, 32);
+            btnCompleteTask.Text = "Mark Complete";
+            btnCompleteTask.UseVisualStyleBackColor = false;
+            btnCompleteTask.Click += btnCompleteTask_Click;
+            //
+            // btnDeleteTask
+            //
+            btnDeleteTask.BackColor = Color.FromArgb(35, 134, 54);
+            btnDeleteTask.FlatStyle = FlatStyle.Flat;
+            btnDeleteTask.Font = new Font("Segoe UI", 9.5F, FontStyle.Bold);
+            btnDeleteTask.ForeColor = Color.White;
+            btnDeleteTask.Location = new Point(160, 8);
+            btnDeleteTask.Name = "btnDeleteTask";
+            btnDeleteTask.Size = new Size(120, 32);
+            btnDeleteTask.Text = "Delete";
+            btnDeleteTask.UseVisualStyleBackColor = false;
+            btnDeleteTask.Click += btnDeleteTask_Click;
+            //
+            // btnRefreshTasks
+            //
+            btnRefreshTasks.BackColor = Color.FromArgb(35, 134, 54);
+            btnRefreshTasks.FlatStyle = FlatStyle.Flat;
+            btnRefreshTasks.Font = new Font("Segoe UI", 9.5F, FontStyle.Bold);
+            btnRefreshTasks.ForeColor = Color.White;
+            btnRefreshTasks.Location = new Point(290, 8);
+            btnRefreshTasks.Name = "btnRefreshTasks";
+            btnRefreshTasks.Size = new Size(120, 32);
+            btnRefreshTasks.Text = "Refresh";
+            btnRefreshTasks.UseVisualStyleBackColor = false;
+            btnRefreshTasks.Click += btnRefreshTasks_Click;
+            //
+            // lblTaskStatus
+            //
+            lblTaskStatus.Dock = DockStyle.Fill;
+            lblTaskStatus.ForeColor = Color.FromArgb(139, 148, 158);
+            lblTaskStatus.Name = "lblTaskStatus";
+            lblTaskStatus.TextAlign = ContentAlignment.MiddleLeft;
+            //
             // ChatbotForm
             //
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -201,9 +388,15 @@ namespace SecretEyeGUI
             Text = "Cybersecurity Awareness Chatbot - SecretEye";
             tabMain.ResumeLayout(false);
             tabChat.ResumeLayout(false);
+            tabTasks.ResumeLayout(false);
             tlpRoot.ResumeLayout(false);
             pnlInput.ResumeLayout(false);
             pnlInput.PerformLayout();
+            tlpTasks.ResumeLayout(false);
+            pnlTaskInput.ResumeLayout(false);
+            pnlTaskInput.PerformLayout();
+            pnlTaskButtons.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)dgvTasks).EndInit();
             ResumeLayout(false);
         }
 
@@ -222,5 +415,20 @@ namespace SecretEyeGUI
         private TextBox txtUserInput;
         private Button btnSend;
         private Label lblStatus;
+        private TableLayoutPanel tlpTasks;
+        private Panel pnlTaskInput;
+        private Label lblTitleCaption;
+        private TextBox txtTaskTitle;
+        private Label lblDescCaption;
+        private TextBox txtTaskDescription;
+        private CheckBox chkUseReminder;
+        private DateTimePicker dtpReminder;
+        private Button btnAddTask;
+        private DataGridView dgvTasks;
+        private Panel pnlTaskButtons;
+        private Button btnCompleteTask;
+        private Button btnDeleteTask;
+        private Button btnRefreshTasks;
+        private Label lblTaskStatus;
     }
 }

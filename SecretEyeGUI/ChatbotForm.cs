@@ -1,5 +1,3 @@
-using MySql.Data.MySqlClient;
-
 namespace SecretEyeGUI
 {
     public partial class ChatbotForm : Form
@@ -7,6 +5,9 @@ namespace SecretEyeGUI
         private readonly VoiceGreeting _voice = new VoiceGreeting();
 
         private readonly ChatBot _chatBot = new ChatBot();
+
+        private readonly TaskRepository _taskRepository = new TaskRepository();
+        private readonly ActivityLogger _activityLogger = new ActivityLogger();
 
         public ChatbotForm()
         {
@@ -28,24 +29,147 @@ namespace SecretEyeGUI
 
             Task.Run(() => _voice.PlayGreeting());
 
-            txtUserInput.Focus();
+            LoadTasks();
 
-            TestDatabaseConnection();
+            txtUserInput.Focus();
         }
 
-        // Quick check that the MySQL connection works.
-        private void TestDatabaseConnection()
+        // Loads all tasks from the database into the grid.
+        private void LoadTasks()
         {
             try
             {
-                using MySqlConnection connection = new MySqlConnection(DatabaseConfig.ConnectionString);
-                connection.Open();
-                MessageBox.Show("Database connection successful.", "SecretEye");
+
+                dgvTasks.DataSource = null;
+                dgvTasks.DataSource = _taskRepository.GetAllTasks();
+
+                // Hide the raw database ID column.
+                if (dgvTasks.Columns["TaskId"] != null)
+                    dgvTasks.Columns["TaskId"].Visible = false;
+
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Database connection failed: " + ex.Message, "SecretEye");
+                lblTaskStatus.Text = "Could not load tasks: " + ex.Message;
             }
+        }
+
+        // Returns the task the user has selected in the grid, or null.
+        private CyberTask? GetSelectedTask()
+        {
+            if (dgvTasks.CurrentRow == null)
+
+                return null;
+
+
+            return dgvTasks.CurrentRow.DataBoundItem as CyberTask;
+        }
+
+        private void btnAddTask_Click(object? sender, EventArgs e)
+        {
+
+            string title = txtTaskTitle.Text.Trim();
+
+            string description = txtTaskDescription.Text.Trim();
+
+            if (title == "" || description == "")
+            {
+                lblTaskStatus.Text = "Please enter both a task title and description.";
+                return;
+            }
+
+            CyberTask task = new CyberTask
+            {
+
+                Title = title,
+                Description = description,
+                ReminderDate = chkUseReminder.Checked ? dtpReminder.Value : null,
+                IsCompleted = false
+            };
+
+            try
+            {
+                _taskRepository.AddTask(task);
+                _activityLogger.Log("Task added: " + task.Title);
+
+                lblTaskStatus.Text = "Task added.";
+                txtTaskTitle.Clear();
+
+                txtTaskDescription.Clear();
+                chkUseReminder.Checked = false;
+
+                LoadTasks();
+            }
+
+            catch (Exception ex)
+            {
+                lblTaskStatus.Text = "Could not add task: " + ex.Message;
+            }
+        }
+
+        private void btnCompleteTask_Click(object? sender, EventArgs e)
+        {
+            CyberTask? task = GetSelectedTask();
+            if (task == null)
+            {
+
+                lblTaskStatus.Text = "Please select a task first.";
+                return;
+
+            }
+
+
+            try
+            {
+                _taskRepository.MarkTaskCompleted(task.TaskId);
+                _activityLogger.Log("Task completed: " + task.Title);
+                lblTaskStatus.Text = "Task marked as completed.";
+                LoadTasks();
+            }
+            catch (Exception ex)
+            {
+                lblTaskStatus.Text = "Could not complete task: " + ex.Message;
+            }
+        }
+
+        private void btnDeleteTask_Click(object? sender, EventArgs e)
+        {
+            CyberTask? task = GetSelectedTask();
+            if (task == null)
+            {
+
+                lblTaskStatus.Text = "Please select a task first.";
+                return;
+
+            }
+
+
+
+            DialogResult answer = MessageBox.Show("Delete this task?\n" + task.Title,
+                "Confirm Delete", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+            if (answer != DialogResult.Yes)
+                return;
+
+            try
+            {
+                _taskRepository.DeleteTask(task.TaskId);
+                _activityLogger.Log("Task deleted: " + task.Title);
+                lblTaskStatus.Text = "Task deleted.";
+                LoadTasks();
+            }
+            catch (Exception ex)
+            {
+                lblTaskStatus.Text = "Could not delete task: " + ex.Message;
+            }
+        }
+
+        private void btnRefreshTasks_Click(object? sender, EventArgs e)
+        {
+
+            LoadTasks();
+
+            lblTaskStatus.Text = "Task list refreshed.";
+
         }
 
         private void btnSend_Click(object? sender, EventArgs e) => SendMessage();
