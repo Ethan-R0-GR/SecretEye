@@ -160,4 +160,4 @@ push. A successful run shows a green check mark under the **Actions** tab.
 
 - Part 1 (console): https://youtu.be/X3wan-jAqdU
 - Part 2 (GUI): https://youtu.be/z4XlbjML-WU
-- Part 3 (Final POE): 
+- Part 3 (Final POE): https://youtu.be/rcSYPyNJYn8
