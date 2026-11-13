@@ -18,6 +18,11 @@ namespace SecretEyeGUI
 
         private void InitializeComponent()
         {
+            tabMain = new TabControl();
+            tabChat = new TabPage();
+            tabTasks = new TabPage();
+            tabQuiz = new TabPage();
+            tabActivity = new TabPage();
             tlpRoot = new TableLayoutPanel();
             lblTitle = new Label();
             rtbBanner = new RichTextBox();
@@ -26,12 +31,48 @@ namespace SecretEyeGUI
             txtUserInput = new TextBox();
             btnSend = new Button();
             lblStatus = new Label();
+            tabMain.SuspendLayout();
+            tabChat.SuspendLayout();
             tlpRoot.SuspendLayout();
             pnlInput.SuspendLayout();
             SuspendLayout();
-            // 
+            //
+            // tabMain  (one tab per feature)
+            //
+            tabMain.Controls.Add(tabChat);
+            tabMain.Controls.Add(tabTasks);
+            tabMain.Controls.Add(tabQuiz);
+            tabMain.Controls.Add(tabActivity);
+            tabMain.Dock = DockStyle.Fill;
+            tabMain.Name = "tabMain";
+            //
+            // tabChat  (holds the existing chat)
+            //
+            tabChat.BackColor = Color.FromArgb(13, 17, 23);
+            tabChat.Controls.Add(tlpRoot);
+            tabChat.Name = "tabChat";
+            tabChat.Text = "Chat";
+            //
+            // tabTasks
+            //
+            tabTasks.BackColor = Color.FromArgb(13, 17, 23);
+            tabTasks.Name = "tabTasks";
+            tabTasks.Text = "Tasks";
+            //
+            // tabQuiz
+            //
+            tabQuiz.BackColor = Color.FromArgb(13, 17, 23);
+            tabQuiz.Name = "tabQuiz";
+            tabQuiz.Text = "Quiz";
+            //
+            // tabActivity
+            //
+            tabActivity.BackColor = Color.FromArgb(13, 17, 23);
+            tabActivity.Name = "tabActivity";
+            tabActivity.Text = "Activity Log";
+            //
             // tlpRoot
-            // 
+            //
             tlpRoot.BackColor = Color.FromArgb(13, 17, 23);
             tlpRoot.ColumnCount = 1;
             tlpRoot.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
@@ -52,9 +93,9 @@ namespace SecretEyeGUI
             tlpRoot.RowStyles.Add(new RowStyle(SizeType.Absolute, 26F));
             tlpRoot.Size = new Size(784, 640);
             tlpRoot.TabIndex = 0;
-            // 
+            //
             // lblTitle
-            // 
+            //
             lblTitle.Dock = DockStyle.Fill;
             lblTitle.Font = new Font("Segoe UI", 15F, FontStyle.Bold);
             lblTitle.ForeColor = Color.FromArgb(56, 189, 208);
@@ -64,9 +105,9 @@ namespace SecretEyeGUI
             lblTitle.TabIndex = 0;
             lblTitle.Text = "SecretEye  -  Cybersecurity Awareness Chatbot";
             lblTitle.TextAlign = ContentAlignment.MiddleCenter;
-            // 
+            //
             // rtbBanner
-            // 
+            //
             rtbBanner.BackColor = Color.FromArgb(13, 17, 23);
             rtbBanner.BorderStyle = BorderStyle.None;
             rtbBanner.Dock = DockStyle.Fill;
@@ -79,9 +120,9 @@ namespace SecretEyeGUI
             rtbBanner.TabIndex = 1;
             rtbBanner.TabStop = false;
             rtbBanner.Text = "";
-            // 
+            //
             // rtbChatHistory
-            // 
+            //
             rtbChatHistory.BackColor = Color.FromArgb(22, 27, 34);
             rtbChatHistory.BorderStyle = BorderStyle.None;
             rtbChatHistory.Dock = DockStyle.Fill;
@@ -94,9 +135,9 @@ namespace SecretEyeGUI
             rtbChatHistory.TabIndex = 2;
             rtbChatHistory.TabStop = false;
             rtbChatHistory.Text = "";
-            // 
+            //
             // pnlInput
-            // 
+            //
             pnlInput.BackColor = Color.FromArgb(13, 17, 23);
             pnlInput.Controls.Add(txtUserInput);
             pnlInput.Controls.Add(btnSend);
@@ -106,9 +147,9 @@ namespace SecretEyeGUI
             pnlInput.Padding = new Padding(0, 6, 0, 6);
             pnlInput.Size = new Size(754, 42);
             pnlInput.TabIndex = 3;
-            // 
+            //
             // txtUserInput
-            // 
+            //
             txtUserInput.BackColor = Color.FromArgb(33, 38, 45);
             txtUserInput.BorderStyle = BorderStyle.FixedSingle;
             txtUserInput.Dock = DockStyle.Fill;
@@ -119,9 +160,9 @@ namespace SecretEyeGUI
             txtUserInput.Size = new Size(644, 27);
             txtUserInput.TabIndex = 0;
             txtUserInput.KeyDown += txtUserInput_KeyDown;
-            // 
+            //
             // btnSend
-            // 
+            //
             btnSend.BackColor = Color.FromArgb(35, 134, 54);
             btnSend.Dock = DockStyle.Right;
             btnSend.FlatStyle = FlatStyle.Flat;
@@ -134,9 +175,9 @@ namespace SecretEyeGUI
             btnSend.Text = "Send";
             btnSend.UseVisualStyleBackColor = false;
             btnSend.Click += btnSend_Click;
-            // 
+            //
             // lblStatus
-            // 
+            //
             lblStatus.Dock = DockStyle.Fill;
             lblStatus.Font = new Font("Segoe UI", 9F);
             lblStatus.ForeColor = Color.FromArgb(139, 148, 158);
@@ -146,18 +187,20 @@ namespace SecretEyeGUI
             lblStatus.TabIndex = 4;
             lblStatus.Text = "Ask me about passwords, phishing, scams, safe browsing, 2FA or privacy.";
             lblStatus.TextAlign = ContentAlignment.MiddleLeft;
-            // 
+            //
             // ChatbotForm
-            // 
+            //
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.FromArgb(13, 17, 23);
             ClientSize = new Size(784, 640);
-            Controls.Add(tlpRoot);
+            Controls.Add(tabMain);
             MinimumSize = new Size(640, 520);
             Name = "ChatbotForm";
             StartPosition = FormStartPosition.CenterScreen;
             Text = "Cybersecurity Awareness Chatbot - SecretEye";
+            tabMain.ResumeLayout(false);
+            tabChat.ResumeLayout(false);
             tlpRoot.ResumeLayout(false);
             pnlInput.ResumeLayout(false);
             pnlInput.PerformLayout();
@@ -166,6 +209,11 @@ namespace SecretEyeGUI
 
         #endregion
 
+        private TabControl tabMain;
+        private TabPage tabChat;
+        private TabPage tabTasks;
+        private TabPage tabQuiz;
+        private TabPage tabActivity;
         private TableLayoutPanel tlpRoot;
         private Label lblTitle;
         private RichTextBox rtbBanner;
