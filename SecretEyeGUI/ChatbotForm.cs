@@ -251,16 +251,13 @@ namespace SecretEyeGUI
         private void tabMain_SelectedIndexChanged(object? sender, EventArgs e)
         {
             if (tabMain.SelectedTab == tabActivity)
-
                 DisplayRecentActivity(5);
         }
 
         // Fills the activity list with the most recent actions, newest first.
         private void DisplayRecentActivity(int count)
         {
-
             lstActivity.Items.Clear();
-
 
             List<string> recent = _activityLogger.GetRecent(count);
             if (recent.Count == 0)
@@ -341,6 +338,7 @@ namespace SecretEyeGUI
             try
             {
                 _chatBot.ProcessInput(message);
+                _activityLogger.Log("Chat: " + message);
             }
             catch (Exception)
             {
