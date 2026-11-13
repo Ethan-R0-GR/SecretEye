@@ -4,6 +4,6 @@ namespace SecretEyeGUI
     public static class DatabaseConfig
     {
         public static string ConnectionString =
-            "Server=localhost;Port=3306;Database=CyberSecurityBotDB;Uid=root;Pwd=Eth@nFourie1999;";
+            "Server=localhost;Port=3306;Database=CyberSecurityBotDB;Uid=root;Pwd=YOUR_PASSWORD;";
     }
 }
