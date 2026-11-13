@@ -247,6 +247,42 @@ namespace SecretEyeGUI
             return -1;
         }
 
+        // Shows the user the latest activity when they open the Activity Log tab.
+        private void tabMain_SelectedIndexChanged(object? sender, EventArgs e)
+        {
+            if (tabMain.SelectedTab == tabActivity)
+
+                DisplayRecentActivity(5);
+        }
+
+        // Fills the activity list with the most recent actions, newest first.
+        private void DisplayRecentActivity(int count)
+        {
+
+            lstActivity.Items.Clear();
+
+
+            List<string> recent = _activityLogger.GetRecent(count);
+            if (recent.Count == 0)
+            {
+                lstActivity.Items.Add("No activity yet.");
+                return;
+            }
+
+            foreach (string entry in recent)
+                lstActivity.Items.Add(entry);
+        }
+
+        private void btnRefreshActivity_Click(object? sender, EventArgs e)
+        {
+            DisplayRecentActivity(5);
+        }
+
+        private void btnShowMore_Click(object? sender, EventArgs e)
+        {
+            DisplayRecentActivity(10);
+        }
+
         private void btnSend_Click(object? sender, EventArgs e) => SendMessage();
 
         private void txtUserInput_KeyDown(object? sender, KeyEventArgs e)
@@ -296,10 +332,8 @@ namespace SecretEyeGUI
             if (intent != NlpIntent.None)
             {
                 HandleNlpIntent(intent);
-
                 txtUserInput.Clear();
                 txtUserInput.Focus();
-
                 return;
             }
 
@@ -333,7 +367,6 @@ namespace SecretEyeGUI
                     tabMain.SelectedTab = tabQuiz;
                     _activityLogger.Log("NLP command: open quiz");
                     break;
-
 
                 case NlpIntent.ShowActivity:
                     AppendLine("Bot", "Here's your activity log.");

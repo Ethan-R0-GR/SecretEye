@@ -57,15 +57,24 @@ namespace SecretEyeGUI
             btnStartQuiz = new Button();
             btnSubmitAnswer = new Button();
             btnNextQuestion = new Button();
+            tlpActivity = new TableLayoutPanel();
+            lblActivityCaption = new Label();
+            lstActivity = new ListBox();
+            pnlActivityButtons = new Panel();
+            btnRefreshActivity = new Button();
+            btnShowMore = new Button();
             tabMain.SuspendLayout();
             tabChat.SuspendLayout();
             tabTasks.SuspendLayout();
             tabQuiz.SuspendLayout();
+            tabActivity.SuspendLayout();
             tlpRoot.SuspendLayout();
             pnlInput.SuspendLayout();
             tlpTasks.SuspendLayout();
             pnlTaskInput.SuspendLayout();
             pnlTaskButtons.SuspendLayout();
+            tlpActivity.SuspendLayout();
+            pnlActivityButtons.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)dgvTasks).BeginInit();
             SuspendLayout();
             //
@@ -77,6 +86,7 @@ namespace SecretEyeGUI
             tabMain.Controls.Add(tabActivity);
             tabMain.Dock = DockStyle.Fill;
             tabMain.Name = "tabMain";
+            tabMain.SelectedIndexChanged += tabMain_SelectedIndexChanged;
             //
             // tabChat  (holds the existing chat)
             //
@@ -112,6 +122,7 @@ namespace SecretEyeGUI
             // tabActivity
             //
             tabActivity.BackColor = Color.FromArgb(13, 17, 23);
+            tabActivity.Controls.Add(tlpActivity);
             tabActivity.Name = "tabActivity";
             tabActivity.Text = "Activity Log";
             //
@@ -505,6 +516,73 @@ namespace SecretEyeGUI
             btnNextQuestion.UseVisualStyleBackColor = false;
             btnNextQuestion.Click += btnNextQuestion_Click;
             //
+            // tlpActivity  (Activity tab layout: caption / list / buttons)
+            //
+            tlpActivity.ColumnCount = 1;
+            tlpActivity.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
+            tlpActivity.Controls.Add(lblActivityCaption, 0, 0);
+            tlpActivity.Controls.Add(lstActivity, 0, 1);
+            tlpActivity.Controls.Add(pnlActivityButtons, 0, 2);
+            tlpActivity.Dock = DockStyle.Fill;
+            tlpActivity.Name = "tlpActivity";
+            tlpActivity.Padding = new Padding(10);
+            tlpActivity.RowCount = 3;
+            tlpActivity.RowStyles.Add(new RowStyle(SizeType.Absolute, 30F));
+            tlpActivity.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
+            tlpActivity.RowStyles.Add(new RowStyle(SizeType.Absolute, 48F));
+            //
+            // lblActivityCaption
+            //
+            lblActivityCaption.Dock = DockStyle.Fill;
+            lblActivityCaption.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+            lblActivityCaption.ForeColor = Color.FromArgb(230, 237, 243);
+            lblActivityCaption.Name = "lblActivityCaption";
+            lblActivityCaption.Text = "Recent activity (newest first)";
+            lblActivityCaption.TextAlign = ContentAlignment.MiddleLeft;
+            //
+            // lstActivity
+            //
+            lstActivity.BackColor = Color.FromArgb(22, 27, 34);
+            lstActivity.BorderStyle = BorderStyle.None;
+            lstActivity.Dock = DockStyle.Fill;
+            lstActivity.Font = new Font("Segoe UI", 10F);
+            lstActivity.ForeColor = Color.FromArgb(230, 237, 243);
+            lstActivity.ItemHeight = 20;
+            lstActivity.Name = "lstActivity";
+            //
+            // pnlActivityButtons
+            //
+            pnlActivityButtons.Controls.Add(btnRefreshActivity);
+            pnlActivityButtons.Controls.Add(btnShowMore);
+            pnlActivityButtons.Dock = DockStyle.Fill;
+            pnlActivityButtons.Name = "pnlActivityButtons";
+            //
+            // btnRefreshActivity
+            //
+            btnRefreshActivity.BackColor = Color.FromArgb(35, 134, 54);
+            btnRefreshActivity.FlatStyle = FlatStyle.Flat;
+            btnRefreshActivity.Font = new Font("Segoe UI", 9.5F, FontStyle.Bold);
+            btnRefreshActivity.ForeColor = Color.White;
+            btnRefreshActivity.Location = new Point(0, 8);
+            btnRefreshActivity.Name = "btnRefreshActivity";
+            btnRefreshActivity.Size = new Size(120, 32);
+            btnRefreshActivity.Text = "Refresh";
+            btnRefreshActivity.UseVisualStyleBackColor = false;
+            btnRefreshActivity.Click += btnRefreshActivity_Click;
+            //
+            // btnShowMore
+            //
+            btnShowMore.BackColor = Color.FromArgb(35, 134, 54);
+            btnShowMore.FlatStyle = FlatStyle.Flat;
+            btnShowMore.Font = new Font("Segoe UI", 9.5F, FontStyle.Bold);
+            btnShowMore.ForeColor = Color.White;
+            btnShowMore.Location = new Point(130, 8);
+            btnShowMore.Name = "btnShowMore";
+            btnShowMore.Size = new Size(120, 32);
+            btnShowMore.Text = "Show More";
+            btnShowMore.UseVisualStyleBackColor = false;
+            btnShowMore.Click += btnShowMore_Click;
+            //
             // ChatbotForm
             //
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -521,6 +599,7 @@ namespace SecretEyeGUI
             tabTasks.ResumeLayout(false);
             tabQuiz.ResumeLayout(false);
             tabQuiz.PerformLayout();
+            tabActivity.ResumeLayout(false);
             tlpRoot.ResumeLayout(false);
             pnlInput.ResumeLayout(false);
             pnlInput.PerformLayout();
@@ -528,6 +607,8 @@ namespace SecretEyeGUI
             pnlTaskInput.ResumeLayout(false);
             pnlTaskInput.PerformLayout();
             pnlTaskButtons.ResumeLayout(false);
+            tlpActivity.ResumeLayout(false);
+            pnlActivityButtons.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)dgvTasks).EndInit();
             ResumeLayout(false);
         }
@@ -573,5 +654,11 @@ namespace SecretEyeGUI
         private Button btnStartQuiz;
         private Button btnSubmitAnswer;
         private Button btnNextQuestion;
+        private TableLayoutPanel tlpActivity;
+        private Label lblActivityCaption;
+        private ListBox lstActivity;
+        private Panel pnlActivityButtons;
+        private Button btnRefreshActivity;
+        private Button btnShowMore;
     }
 }
