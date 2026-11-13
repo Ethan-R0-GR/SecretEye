@@ -1,3 +1,5 @@
+using MySql.Data.MySqlClient;
+
 namespace SecretEyeGUI
 {
     public partial class ChatbotForm : Form
@@ -27,6 +29,23 @@ namespace SecretEyeGUI
             Task.Run(() => _voice.PlayGreeting());
 
             txtUserInput.Focus();
+
+            TestDatabaseConnection();
+        }
+
+        // Quick check that the MySQL connection works.
+        private void TestDatabaseConnection()
+        {
+            try
+            {
+                using MySqlConnection connection = new MySqlConnection(DatabaseConfig.ConnectionString);
+                connection.Open();
+                MessageBox.Show("Database connection successful.", "SecretEye");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Database connection failed: " + ex.Message, "SecretEye");
+            }
         }
 
         private void btnSend_Click(object? sender, EventArgs e) => SendMessage();
